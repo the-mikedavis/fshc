@@ -13,21 +13,15 @@ use windows_sys::Win32::{
 };
 
 impl FdList {
-    pub fn list(pid: i32) -> Result<ProcStats, FshcError> {
-        // TODO: bail if pid <= 0;
-
-        let mut stats = ProcStats {
-            pid,
-            socket_descriptors: 0,
-            file_descriptors: 0,
-        };
+    pub fn list(pid: Pid) -> Result<ProcStats, FshcError> {
+        let mut stats = ProcStats::new(pid);
 
         let handle = unsafe {
             open_process(
                 PROCESS_QUERY_INFORMATION,
                 // Whether child processes of this process should inherit the handle.
                 FALSE,
-                pid as u32,
+                pid.into(),
             )
         };
 
